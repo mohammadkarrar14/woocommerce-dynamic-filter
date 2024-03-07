@@ -1,0 +1,496 @@
+#woocommerce-dynamic-filters {
+    margin: 0 auto;
+    width:300px;
+    overflow: hidden; /* Clear float */
+}
+
+
+.filter-class .container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    height: 64px;
+
+}
+
+.filter-class .title {
+    flex: 1; /* Title takes up remaining space */
+    height: 24px;
+    font-size: 24px;
+    font-weight: 700;
+    line-height: 24px;
+    letter-spacing: -0.02em;
+    text-align: left;
+    color: #000000;
+    font-family: 'Neue Haas Grotesk Text Pro', sans-serif;
+
+
+}
+
+.filter-class .filter-action {
+    color: #0D76C2;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    text-transform: uppercase;
+    cursor: pointer;
+    font-family: 'Neue Haas Grotesk Text Pro', sans-serif;
+
+}
+
+.filter-class .container-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    height: 64px;
+    border-top: 1px solid #AAA;
+
+}
+
+.filter-class .head-title {
+    flex: 1; /* Title takes up remaining space */
+    height: 24px;
+    font-size: 20px;
+    font-weight: 700;
+    line-height: 24px;
+    letter-spacing: -0.02em;
+    text-align: left;
+    color: #000000;
+    font-family: 'Neue Haas Grotesk Text Pro', sans-serif;
+
+}
+
+.filter-class .head-arrow {
+    color: #0D76C2;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    text-transform: uppercase;
+    cursor: pointer;
+}
+
+
+/* Checkbox list styling */
+.filter-box {
+    margin-bottom: 20px;
+    background: none;
+}
+
+.filter-box ul {
+    list-style-type: none;
+    padding-left: 0;
+}
+
+.filter-box ul li {
+    margin-bottom: 5px;
+    font-family: inherit;
+    font-size: 14px;
+    font-weight: 450;
+    line-height: 16px;
+    letter-spacing: 0em;
+    text-align: left;
+
+}
+
+/* Price range input styling */
+#price-range input[type="text"] {
+    width: calc(100% - 22px); /* Account for input padding */
+    margin-top: 10px;
+    margin-bottom: 10px;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    box-sizing: border-box;
+}
+
+
+.price-range {
+  display: flex;
+  justify-content: space-between; /* Distribute items evenly */
+}
+
+#min-price {
+  text-align: left; /* Align text to the left */
+}
+
+#max-price {
+  text-align: right; /* Align text to the right */
+}
+
+/* Price display styling */
+#price-range #min-price {
+    margin: 5px 0;
+    font-size: 16px;
+    font-weight: 900;
+    text-align: left;
+    font-family: "neue-haas-grotesk-display-pro", Sans-serif;
+}
+
+#price-range #max-price {
+    margin: 5px 0;
+    font-size: 16px;
+    font-weight: 900;
+    text-align: right;
+    font-family: "neue-haas-grotesk-display-pro", Sans-serif;
+}
+
+
+.pagination-filter{
+  margin-top:20px;
+  width: 400px;
+}
+
+.pagination-filter .current {
+    background-color: #0D76C2 !important;
+    color: #fff !important;
+}
+
+.pagination-filter .page-numbers {
+    width: 48px;
+    height: 48px;
+    display: inline-block;
+    color: #0D76C2;
+    background: none;
+    border: 3px solid #0D76C2;
+    border-radius: 50%;
+    font-size: 14px;
+    font-weight: bold;
+    text-decoration: none;
+    line-height: 40px;
+    text-align: center;
+    transition: background-color 0.3s ease;
+}
+
+.pagination-filter .page-numbers:hover {
+    background-color: #0D76C2; /* Change as needed */
+    color: #fff;
+}
+
+.pagination-filter .page-numbers.active {
+    background-color: #0D76C2 !important;
+    color: #fff !important;
+    
+}
+
+.pagination-filter .next.page-numbers::after {
+    content: '→'; /* Unicode arrow character */
+}
+
+/* Custom grid container */
+.custom-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr); /* 3 columns */
+    gap: 10px; /* Spacing between cards */
+}
+
+/* Product card */
+.product-card {
+    border: 1px solid #ddd;
+    padding: 16px;
+    border-radius: 5px;
+    width: 300px;
+    background: #FFFFFF;
+}
+
+.product-card:hover {
+    -webkit-box-shadow: 0px 12px 12px -4px #0000000F, 0px 24px 28px -4px #00000029;
+    transition: box-shadow 0.3s ease-in-out; /* Add transition for smooth effect */
+    box-shadow: 0px 12px 12px -4px #0000000F, 0px 24px 28px -4px #00000029;
+}
+
+/* Product image */
+.product-image img {
+    max-width: 100%;
+    height: 305px;
+    height: auto;
+}
+
+/* Product details */
+.product-details {
+    margin-top: 10px;
+}
+
+/* Product brand */
+.product-brand {
+    font-family: inherit;
+    font-size: 12px;
+    font-weight: 700;
+    line-height: 18px;
+    letter-spacing: -0.02em;
+    text-align: left;
+    width: 268px;
+    height: 18px;
+    color: #53B0E4;
+}
+
+/* Product title */
+.product-title {
+    font-family: inherit;
+    text-transform:capitalize !important;
+    font-size: 24px;
+    font-weight: 700;
+    line-height: 26px;
+    letter-spacing: -0.02em;
+    text-align: left;
+    width: 268px;
+    height: 21px;
+}
+
+.product-sku{
+    font-family: inherit;
+    font-size: 14px;
+    font-weight: 700;
+    line-height: 21px;
+    letter-spacing: -0.02em;
+    text-align: left;
+    color: #AAAAAA;
+}
+
+.add-to-cart-div {
+    display: flex;
+    justify-content: center;
+
+}
+/* Product amount */
+.product-price {
+    font-family: inherit;
+    font-size: 24px;
+    font-weight: 700;
+    line-height: 36px;
+    letter-spacing: -0.02em;
+    text-align: left;
+    width: 79px;
+    height: 36px;
+    color: #0D76C2;
+    flex:1;
+}
+
+.add-cart-icon {
+}
+
+
+/* Add to cart button */
+.add-to-cart-div .add-to-cart-btn {
+    width: 48px;
+    height: 48px;
+    background: none;
+    padding: 12px;
+    border-radius: 240px;
+    border: 2px solid #0D76C2;
+    cursor: pointer;
+    display: flex; /* Use flexbox */
+    justify-content: center; /* Center horizontally */
+    align-items: center; /* Center vertically */
+    transition: box-shadow 0.3s; /* Smooth transition for box shadow */
+}
+
+.add-to-cart-div .add-to-cart-btn:hover {
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5); /* Box shadow on hover */
+}
+
+
+.product-overlay {
+    position: absolute;
+    width: 100%;
+    display: none; /* Initially hidden */
+}
+.ajax-loader {
+    width: 50px;
+    height: 50px; /* Make sure height matches width for a perfect circle */
+    border-radius: 50%;
+    background: #0D76C2;
+    box-shadow: 0 0 0 0 #0D76C2;
+    animation: l2 1.5s infinite linear;
+    position: absolute;
+    top: 30%;
+    left: 50%;
+    transform: translate(-50%, -50%); /* Center the loader */
+}
+
+.ajax-loader:before,
+.ajax-loader:after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  box-shadow: 0 0 0 0 #0D76C2;
+  animation: inherit;
+  animation-delay: -0.5s;
+}
+.ajax-loader:after {
+  animation-delay: -1s;
+}
+@keyframes l2 {
+    100% {box-shadow: 0 0 0 40px #0000}
+}
+
+.irs--flat .irs-handle {
+    top: 20px !important;
+    width: 20px !important;
+    border-radius: 100% !important;
+    height: 20px !important;
+    border: 2px solid #AAA !important;
+    background-color: #FFF !important;
+}
+
+.irs--flat .irs-handle>i:first-child{
+    position: absolute;
+    display: block;
+    top: 0;
+    left: 50%;
+    width: 2px;
+    height: 100%;
+    margin-left: -1px;
+    background-color: #fff !important;
+}
+
+.irs--flat .irs-bar {
+    top: 28px !important;
+    height: 5px !important;
+    background-color: #000 !important;
+}
+
+.irs--flat .irs-from, .irs--flat .irs-to, .irs--flat .irs-single {
+    display: none !important;    
+}
+
+.irs--flat .irs-min, .irs--flat .irs-max{
+    display: none !important;    
+
+}
+
+
+.irs--flat .irs-line {
+    top: 27px !important;
+    height: 5px !important;
+    background-color: #e1e4e9 !important;
+    border-radius: 4px;
+}
+
+/* Style checkbox directly */
+.filter-box input[type="checkbox"] {
+  appearance: none; /* Remove default appearance */
+  -webkit-appearance: none; /* For Safari/Chrome */
+  -moz-appearance: none; /* For Firefox */
+  width: 20px; /* Size of the checkbox */
+  height: 20px; /* Size of the checkbox */
+  border: 2px solid #AAAAAA; /* Black border */
+  background-color: #fff; /* White background */
+  cursor: pointer;
+  vertical-align: middle;
+}
+
+/* Style the checkbox when checked */
+.filter-box input[type="checkbox"]:checked {
+  background-color: #000;
+  border: 2px solid #AAAAAA;
+}
+
+.filter-box input[type="checkbox"]::before {
+    content: '';
+    display: inline-block;
+    width: 12px;
+    height: 12px;
+/*    background-image: url(../../images/icon.png);*/
+    margin-left: 2px;
+    margin-top: 2px;
+    /* left: 2px; */
+    background-size: contain;
+}
+
+/* Adjust the icon position when checkbox is checked */
+.filter-box input[type="checkbox"]:checked::before {
+  background-position: center; /* Center the icon */
+}
+.filter-box ul li {
+/*    height: 34px;*/
+}
+.filter-box ul li label {
+    margin-left: 10px;
+    font-family: 'Neue Haas Grotesk Display Pro', sans-serif;
+}
+
+.filter-class .showing-info {
+    padding-bottom: 20px;
+    font-family: 'Neue Haas Grotesk Display Pro', sans-serif;
+}
+
+.sorting-options {
+  position: relative;
+  display: inline-block;
+}
+
+.sorting-options select {
+  padding: 0.5em 2em 0.5em 1em;
+  font-size: 12px;
+  font-weight: 700;
+  border: none;
+  border-radius: 5px;
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  background: none;
+  cursor: pointer;
+  outline: none;
+  color: #0D76C2;
+  font-family: 'Neue Haas Grotesk Text Pro', sans-serif;
+  text-transform: uppercase;
+}
+
+.sorting-options select option {
+  font-size: inherit;
+  background-color: #fff;
+}
+
+.sorting-options::after {
+  content: "\1F897";
+  font-size: 20px;
+  font-weight: 700;
+  position: absolute;
+  top: 70%;
+  right: 6%;
+  transform: translateY(-50%);
+  pointer-events: none;
+  color: #0D76C2;
+}
+
+/* Media queries for responsiveness */
+@media screen and (max-width: 480px) {
+    .filter-class .container,
+    .filter-class .container-head {
+    }
+
+    .filter-class .title,
+    .filter-class .head-title {
+        font-size: 16px ;
+        margin-bottom: 10px;
+    }
+
+    .filter-class .filter-action,
+    .filter-class .head-arrow {
+        font-size: 10px;
+    }
+}
+
+
+.filter-product-result {
+    display: grid;
+    grid-gap: 20px !important;
+    grid-template-columns: repeat(2, minmax(0, 1fr)); /* Default to 2 columns for mobile */
+}
+
+/* For desktop */
+@media only screen and (min-width: 768px) {
+    .filter-product-result {
+        grid-template-columns: repeat(3, minmax(0, 1fr)); /* Switch to 3 columns for desktop */
+    }
+}
+
+
+@media only screen and (max-width: 768px) {
+  #woocommerce-dynamic-filters {
+    display: none;
+  }
+}
