@@ -1,12 +1,12 @@
 # WooCommerce Dynamic Filter
 
-**Contributors:** Muhammad Karrar  
-**Tags:** woocommerce, filter, dynamic, category, subcategory  
-**Requires at least:** 4.0  
-**Tested up to:** 5.9  
-**Stable tag:** 1.0.0  
-**License:** GPL-2.0+  
-**License URI:** http://www.gnu.org/licenses/gpl-2.0.txt  
+Contributors: Muhammad Karrar  
+Tags: woocommerce, filter, dynamic, category, subcategory  
+Requires at least: 4.0  
+Tested up to: 6.4.2  
+Stable tag: 1.0.0  
+License: GPL-2.0+  
+License URI: http://www.gnu.org/licenses/gpl-2.0.txt  
 
 Enhance your WooCommerce store's product filtering capabilities with the WooCommerce Dynamic Filter plugin. This plugin allows users to refine their product searches by selecting main categories and subcategories, providing a more intuitive and efficient shopping experience.
 
