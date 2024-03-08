@@ -692,7 +692,8 @@ class Woocommerce_Dynamic_Filter_Public {
 	            $products_query->the_post();
 	            $product = wc_get_product(get_the_ID());
 	            // Render Elementor template and concatenate HTML for each product
-	            $products_html .= Elementor\Plugin::instance()->frontend->get_builder_content_for_display(22063);
+	            // $products_html .= Elementor\Plugin::instance()->frontend->get_builder_content_for_display(22063);
+	            $products_html .= $this->generate_product_card($product);
 	        }
 	        // Store HTML for products in response array
 	        $response['result'] = $products_html;
