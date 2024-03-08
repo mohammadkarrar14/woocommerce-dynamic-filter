@@ -190,7 +190,7 @@
     border: 1px solid #ddd;
     padding: 16px;
     border-radius: 5px;
-    width: 300px;
+    height: min-content;
     background: #FFFFFF;
 }
 
@@ -220,8 +220,6 @@
     line-height: 18px;
     letter-spacing: -0.02em;
     text-align: left;
-    width: 268px;
-    height: 18px;
     color: #53B0E4;
 }
 
@@ -234,8 +232,6 @@
     line-height: 26px;
     letter-spacing: -0.02em;
     text-align: left;
-    width: 268px;
-    height: 21px;
 }
 
 .product-sku{
@@ -250,7 +246,7 @@
 
 .add-to-cart-div {
     display: flex;
-    justify-content: center;
+    justify-content: space-between;
 
 }
 /* Product amount */
@@ -258,18 +254,19 @@
     font-family: inherit;
     font-size: 24px;
     font-weight: 700;
-    line-height: 36px;
+    line-height: 44px;
     letter-spacing: -0.02em;
     text-align: left;
-    width: 79px;
-    height: 36px;
+    width: auto; /* Adjust width automatically */
+    max-width: calc(100% - 80px); /* Limit maximum width to allow space for the button */
+    margin-right: 10px; /* Add right margin to create space between the price and button */
     color: #0D76C2;
-    flex:1;
+    flex: 1;
 }
 
 .add-cart-icon {
+    /* Add your styles for the cart icon here */
 }
-
 
 /* Add to cart button */
 .add-to-cart-div .add-to-cart-btn {
@@ -277,14 +274,33 @@
     height: 48px;
     background: none;
     padding: 12px;
-    border-radius: 240px;
+    border-radius: 50%; /* Use border-radius 50% for a circular button */
     border: 2px solid #0D76C2;
     cursor: pointer;
-    display: flex; /* Use flexbox */
-    justify-content: center; /* Center horizontally */
-    align-items: center; /* Center vertically */
     transition: box-shadow 0.3s; /* Smooth transition for box shadow */
 }
+
+/* Hover effect for the button */
+.add-to-cart-div .add-to-cart-btn:hover {
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); /* Add a subtle shadow on hover */
+}
+
+/* Media query for mobile devices */
+@media (max-width: 768px) {
+    .product-price {
+        font-size: 18px; /* Decrease font size for smaller screens */
+        line-height: 34px; /* Adjust line height accordingly */
+        max-width: calc(100% - 60px); /* Limit maximum width for smaller screens */
+        margin-right: 5px; /* Reduce margin for smaller screens */
+    }
+
+    .add-to-cart-div .add-to-cart-btn {
+        width: 40px; /* Decrease button size for smaller screens */
+        height: 40px;
+        padding: 10px; /* Adjust padding accordingly */
+    }
+}
+
 
 .add-to-cart-div .add-to-cart-btn:hover {
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.5); /* Box shadow on hover */
