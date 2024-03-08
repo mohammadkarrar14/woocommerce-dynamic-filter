@@ -95,6 +95,9 @@
         // Function to update products via AJAX
         function updateBrandProductsAjax() {
 
+            $('html, body').animate({scrollTop: $('.sorting-options').offset().top - 100}, 'fast');
+
+            
             // Get the height and width of .custom-product-grid
             var productsHeight = $('.filter-product-result').height();
             var productsWidth = $('.filter-product-result').width();
@@ -134,18 +137,30 @@
                     nonce: WDFVars.nonce // Add nonce to the request
                 },
                 success: function(response) {
-                    $('.filter-product-result').html('');
-                    $('.filter-product-result').fadeOut('slow', function() {
-                        // Replace the HTML content and fade it back in
-                        $(this).html(response.result + response.pagination).fadeIn('slow', function() {
+                    // Cache frequently accessed elements
+                    var $filterProductResult = $('.filter-product-result');
+                    var $customPagination = $('#custom-pagination-filter');
+                    var $showingInfo = $('.showing-info');
+
+                    // Fade out .filter-product-result quickly
+                    $filterProductResult.fadeOut('fast', function() {
+                        // Replace the HTML content and fade it back in quickly
+                        $(this).html(response.result).fadeIn('fast', function() {
                             // Update the displayed product information after the animation is complete
                             var displayedProducts = response.displayed_products;
                             var totalProducts = response.total_products;
+                            
+                            // Update the showing info
                             if (displayedProducts > 0) {
-                                $('.showing-info').html('Showing ' + displayedProducts + ' of ' + totalProducts);
+                                $showingInfo.html('Showing ' + displayedProducts + ' of ' + totalProducts);
                             }
+
+                            // Update the pagination content
+                            $customPagination.html(response.pagination);
                         });
                     });
+
+
                 },
                 error: function(xhr, status, error) {
                     console.error(xhr.responseText); // Log the error response
@@ -156,13 +171,25 @@
             });
         }
 
+        function updatePageNumber(clickedPage) {
+            var page = clickedPage.text(); // Retrieve the current page number
+
+            // Check if the clicked page number has the class 'next' or 'prev'
+            if ($(clickedPage).hasClass('next')) {
+                page = parseInt(page) + 1; // Increment the current page number by 1
+            } else if ($(clickedPage).hasClass('prev')) {
+                page = Math.max(parseInt(page) - 1, 1); // Ensure the page number is not less than 1
+            }
+
+            $('#product-page-number').val(page); // Set the value of the '#product-page-number' input field to the updated page number
+        }
+        
         // Pagination click event
         $(document).on('click', '.pagination-filter a.page-numbers', function(event) {
             event.preventDefault();
-            $('.pagination-filter a.page-numbers').removeClass('current');
-            $(this).addClass('current');
-            var page = $(this).text();
-            $('#product-page-number').val(page);
+            var page = $(this);
+
+            updatePageNumber( page );
             updateBrandProductsAjax();
         });
 

@@ -3,6 +3,7 @@
 
     $(document).ready(function() {
         
+        updateProductsAjax();
 
         // Show loader before AJAX request
         $('.filter-product-result').before(`
@@ -10,6 +11,15 @@
                 <div class="ajax-loader"></div>
             </div>
         `);
+        
+        $('#main-category input[type="checkbox"]').each(function() {
+            var main_category_page_id = $('#main-category-page-id').val();
+            if ( $(this).val() === main_category_page_id ) {
+                $(this).prop('checked', true).trigger('change');
+            }
+        });
+        
+
 
         // Function to clear checkboxes and reset price range slider to default values
         function clearCheckboxes() {
@@ -36,7 +46,7 @@
         });
 
         // Set href attribute of pagination links to "#"
-        $('.pagination a.page-numbers').attr('href', '#');
+        $('.pagination-filter a.page-numbers').attr('href', '#');
 
         // Function to update subcategories and brands based on selected main category
         function updateFilters() {
@@ -67,10 +77,12 @@
 
                         $('#sub-category').html(subcategoryCheckboxes);
 
+
                         // Select subcategory checkbox if exists in URL
-                         $('#sub-category input[type="checkbox"]').each(function() {
-                            var subCategoryId = $(this).val(); // Assuming the value attribute contains the sub-category ID
-                            if (subCategoryId === categoryInfo.subCategoryId) {
+                        var sub_category_page_id = $('#sub-category-page-id').val();
+
+                        $('#sub-category input[type="checkbox"]').each(function() {
+                            if( $(this).val() === sub_category_page_id ){
                                 $(this).prop('checked', true).trigger('change');
                             }
                         });
@@ -78,6 +90,7 @@
                 });
 
                 updateBrands();
+                updatePriceRange();
             } else {
                 // Clear subcategories, brands, and price range if no main categories selected
                 $('#sub-category').empty();
@@ -193,6 +206,9 @@
             onChange: function(data) {
                 $('#min-price').text('$' + data.from);
                 $('#max-price').text('$' + data.to);
+                $('#min-price-hidden').val( data.from);
+                $('#max-price-hidden').val( data.to);
+
                 updateProductsAjax();
             }
         });
@@ -200,19 +216,40 @@
 
         // Function to update products via AJAX
         function updateProductsAjax() {
+
+            $('html, body').animate({scrollTop: $('.sorting-options').offset().top - 100}, 'fast');
+
+            // Get the height and width of .custom-product-grid
+            var productsHeight = $('.filter-product-result').height();
+            var productsWidth = $('.filter-product-result').width();
+
+            // Apply CSS to .product-overlay with dynamic height
+            $('.product-overlay').css({
+                'height': productsHeight + 'px',
+                'width': productsWidth + 'px',
+                'display': 'block',
+                'z-index': '9'
+            });
+
             var min = $('#min-price-hidden').val();
             var max = $('#max-price-hidden').val();
             var sortingOption = $('#sort-option').val();
+
             var selectedCategories = $('#main-category input[type="checkbox"]:checked').map(function() {
                 return $(this).val();
             }).get();
+
             var selectedSubCategories = $('#sub-category input[type="checkbox"]:checked').map(function() {
                 return $(this).val();
             }).get();
+
             var selectedBrandCategories = $('#brands input[type="checkbox"]:checked').map(function() {
                 return $(this).val();
             }).get();
+
             var page = $('#product-page-number').val();
+
+            var search = $('#search-input-0e28eb2').val();
 
             $.ajax({
                 type: 'POST',
@@ -225,19 +262,36 @@
                     sort_option: sortingOption,
                     min_value: min,
                     max_value: max,
-                    page: page
+                    page: page,
+                    search: search,
                 },
                 success: function(response) {
-                    console.log('testing', response);
-                    $('.filter-product-result').html(response.result);
-                    var displayedProducts = response.displayed_products;
-                    var totalProducts = response.total_products;
-                    if (displayedProducts > 0) {
-                        $('.showing-info').html('Showing ' + displayedProducts + ' of ' + totalProducts);
-                    }
+                    // Cache frequently accessed elements
+                    var $filterProductResult = $('.filter-product-result');
+                    var $customPagination = $('#custom-pagination-filter');
+                    var $showingInfo = $('.showing-info');
+
+                    // Fade out .filter-product-result quickly
+                    $filterProductResult.fadeOut('fast', function() {
+                        // Replace the HTML content and fade it back in quickly
+                        $(this).html(response.result).fadeIn('fast', function() {
+                            // Update the displayed product information after the animation is complete
+                            var displayedProducts = response.displayed_products;
+                            var totalProducts = response.total_products;
+                            
+                            // Update the showing info
+                            if (displayedProducts > 0) {
+                                $showingInfo.html('Showing ' + displayedProducts + ' of ' + totalProducts);
+                            }
+
+                            // Update the pagination content
+                            $customPagination.html(response.pagination);
+                        });
+                    });
+
+
                 },
                 error: function(xhr, status, error) {
-                    console.log(error);
                 },
                 complete: function() {
                     $('.product-overlay').hide();
@@ -245,11 +299,26 @@
             });
         }
 
-        // Event handlers
+        function updatePageNumber(clickedPage) {
+            var page = clickedPage.text(); // Retrieve the current page number
+
+            // Check if the clicked page number has the class 'next' or 'prev'
+            if ($(clickedPage).hasClass('next')) {
+                page = parseInt(page) + 1; // Increment the current page number by 1
+            } else if ($(clickedPage).hasClass('prev')) {
+                page = Math.max(parseInt(page) - 1, 1); // Ensure the page number is not less than 1
+            }
+
+            $('#product-page-number').val(page); // Set the value of the '#product-page-number' input field to the updated page number
+        }
+
         $(document).on('click', '.pagination-filter a.page-numbers', function(event) {
             event.preventDefault();
+            var page = $(this);
+            updatePageNumber( page );
             updateProductsAjax();
         });
+
 
         $(document).on('change', '#main-category input[type="checkbox"]', function() {
             updateFilters();
@@ -272,59 +341,9 @@
             updateProductsAjax();
         });
 
-        // Function to extract category information from the URL
-        function extractCategoryInfoFromURL(url) {
-            var parts = url.split('/');
-            var parentCategory = parts[parts.length - 3];
-            var subCategory = parts[parts.length - 2];
-            return { parentCategory: parentCategory, subCategory: subCategory };
-        }
-
-        function extractBrandInfoFromURL(url) {
-            var parts = url.split('/');
-            var brand = '';
-
-            // Find the index of 'brands' in the URL
-            var brandIndex = parts.indexOf('brands');
-
-            // If 'brands' found, get the next part as the brand name
-            if (brandIndex !== -1 && brandIndex < parts.length - 1) {
-                brand = parts[brandIndex + 1];
-            }
-
-            return brand;
-        }
-
-        // Function to select checkboxes for subcategory and its parent category
-        function selectCategoryCheckboxes(parentCategory, subCategory) {
-            var lowercaseParentCategory = parentCategory.toLowerCase();
-            var lowercaseSubCategory = subCategory.toLowerCase();
-
-            $('#main-category input[type="checkbox"]').each(function() {
-                var label = $(this).next('label').text().trim().toLowerCase();
-                if (label.includes(lowercaseParentCategory)) {
-                    $(this).prop('checked', true).trigger('change');
-                }
-            });
-        }
-
-        // Function to uncheck checkboxes for the "brands" category
-        function hideBrandsCheckbox(brandInfo) {
-            $('#brands').hide();
-            $('#brands input[type="checkbox"]').each(function() {
-                var label = $(this).next('label').text().trim().toLowerCase();
-                if (label.includes(brandInfo)) {
-                    $(this).prop('checked', false).trigger('change');
-                }
-            });
-        }
-
-        // Select checkboxes based on extracted category information
-        var currentURL = window.location.href;
-        var categoryInfo = extractCategoryInfoFromURL(currentURL);
-        var brandInfo = extractBrandInfoFromURL(currentURL);
-        selectCategoryCheckboxes(categoryInfo.parentCategory, categoryInfo.subCategory);
-        hideBrandsCheckbox(brandInfo);
-
+        $(document).on('click', '.mobile-filter-btn', function() {
+            $('#woocommerce-dynamic-filters').slideToggle();
+        });
+        
     });
 })(jQuery);

@@ -138,8 +138,10 @@
 
 
 .pagination-filter{
-  margin-top:20px;
-  width: 400px;
+  display: flex;
+  justify-content: left;
+  margin-bottom:20px;
+  width: 100%;
 }
 
 .pagination-filter .current {
@@ -174,10 +176,6 @@
     
 }
 
-.pagination-filter .next.page-numbers::after {
-    content: '→'; /* Unicode arrow character */
-}
-
 /* Custom grid container */
 .custom-grid {
     display: grid;
@@ -190,7 +188,7 @@
     border: 1px solid #ddd;
     padding: 16px;
     border-radius: 5px;
-    height: min-content;
+/*    height: min-content;*/
     background: #FFFFFF;
 }
 
@@ -461,16 +459,19 @@
 }
 
 .sorting-options::after {
-  content: "\1F897";
-  font-size: 20px;
-  font-weight: 700;
+  content: "";
+  background-image: url('https://stagingsound.wpenginepowered.com/wp-content/uploads/2024/03/chevron-down.svg');
+  background-size: contain;
+  background-repeat: no-repeat;
+  width: 25px;
+  height: 25px;
   position: absolute;
-  top: 70%;
-  right: 6%;
+  top: 56%;
+  right: 0%;
   transform: translateY(-50%);
   pointer-events: none;
-  color: #0D76C2;
 }
+
 
 /* Media queries for responsiveness */
 @media screen and (max-width: 480px) {
@@ -509,4 +510,9 @@
   #woocommerce-dynamic-filters {
     display: none;
   }
+}
+
+
+.elementor-22063{
+    display: flex !important;
 }

@@ -95,7 +95,7 @@ class Woocommerce_Dynamic_Filter_Public {
 	public function enqueue_styles() {
 
 		$random_number = rand(); // Generate a random number
-		wp_enqueue_style( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'css/woocommerce-dynamic-filter-public.css?v=' . $random_number, array(), $this->version, 'all' );
+		wp_enqueue_style( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'css/woocommerce-dynamic-filter-public.css?v=' . $random_number, array(), $random_number, 'all' );
 
 		
 		wp_enqueue_style('ion-rangeslider-css', 'https://cdnjs.cloudflare.com/ajax/libs/ion-rangeslider/2.3.1/css/ion.rangeSlider.min.css');
@@ -108,7 +108,8 @@ class Woocommerce_Dynamic_Filter_Public {
 	 * @since    1.0.0
 	 */
 	public function enqueue_scripts() {
-	    $random_number = rand(); // Generate a random number
+	    // Generate random number for cache busting
+	    $random_number = rand(1, 1000);
 	    
 	    // Enqueue ion-rangeslider-js
 	    wp_enqueue_script('ion-rangeslider-js', 'https://cdnjs.cloudflare.com/ajax/libs/ion-rangeslider/2.3.1/js/ion.rangeSlider.min.js', array('jquery'), null, true);
@@ -123,9 +124,12 @@ class Woocommerce_Dynamic_Filter_Public {
 
 	        // Localize wdf-brand-script with the localized data
 	        wp_localize_script( 'wdf-brand-script', 'WDFVars', $data );
-	    } else {
+	    } 
+
+	    // Check if it's a product category taxonomy page or shop page
+	    if( is_tax('product_cat') || is_shop()) {
 	        // Enqueue wdf-category-script with a random number added to the URL
-	        wp_enqueue_script( 'wdf-category-script', plugin_dir_url( __FILE__ ) . 'js/woocommerce-dynamic-filter-public-v2.js?v=' . $random_number, array( 'jquery' ), $this->version, false );
+	        wp_enqueue_script( 'wdf-category-script', plugin_dir_url( __FILE__ ) . 'js/woocommerce-dynamic-filter-public.js', array( 'jquery' ), $random_number, false );
 
 	        // Get localized data to pass to scripts
 	        $data = $this->get_localize_data();
@@ -134,6 +138,7 @@ class Woocommerce_Dynamic_Filter_Public {
 	        wp_localize_script( 'wdf-category-script', 'WDFVars', $data );
 	    }
 	}
+
 
 	/**
 	 * Get the localized data for JavaScript.
@@ -692,8 +697,8 @@ class Woocommerce_Dynamic_Filter_Public {
 	            $products_query->the_post();
 	            $product = wc_get_product(get_the_ID());
 	            // Render Elementor template and concatenate HTML for each product
-	            // $products_html .= Elementor\Plugin::instance()->frontend->get_builder_content_for_display(22063);
-	            $products_html .= $this->generate_product_card($product);
+	            $products_html .= Elementor\Plugin::instance()->frontend->get_builder_content_for_display(22063);
+	            // $products_html .= $this->generate_product_card($product);
 	        }
 	        // Store HTML for products in response array
 	        $response['result'] = $products_html;
@@ -741,7 +746,9 @@ class Woocommerce_Dynamic_Filter_Public {
 	    $brand = esc_html($brand);
 
 	    $output = '<div class="product-card">';
+	    $output .= '<a href="' . esc_url(get_permalink($product->get_id())) . '">';
 	    $output .= '<div class="product-image">' . $image . '</div>';
+	    $output .= '</a>';
 	    $output .= '<div class="product-details">';
 	    $output .= '<div class="product-info">';
 	    $output .= '<div class="product-brand">' . $brand . '</div>';
@@ -750,13 +757,16 @@ class Woocommerce_Dynamic_Filter_Public {
 	    $output .= '</div>'; // Close product-info
 	    $output .= '<div class="add-to-cart-div">';
 	    $output .= '<div class="product-price">' . $amount . '</div>';
-	    $output .= '<a href="' . esc_url(get_permalink($product->get_id())) . '" class="add-to-cart-btn" data-product-id="' . $product->get_id() . '"><img class="add-cart-icon" src="'.WOOCOMMERCE_DYNAMIC_FILTER_URL . 'images/cart-add.png' .'"></a>';
+	    $output .= '<a href="?add-to-cart=' . $product->get_id() . '" data-quantity="1" data-product_id="' . $product->get_id() . '" class="add-to-cart-btn ajax_add_to_cart" data-product-id="' . $product->get_id() . '">';
+	    $output .= '<img class="add-cart-icon" src="'.WOOCOMMERCE_DYNAMIC_FILTER_URL . 'images/cart-add.png' .'">';
+	    $output .= '</a>';
 	    $output .= '</div>'; // Close add-to-cart-div
 	    $output .= '</div>'; // Close product-details
 	    $output .= '</div>'; // Close product-card
 
 	    return $output;
 	}
+
 
 	
 	public function generate_pagination($products_query, $current_page) {
@@ -768,8 +778,9 @@ class Woocommerce_Dynamic_Filter_Public {
 		        'total'      => $products_query->max_num_pages,
 		        'current'    => $current_page, // Set the current page
 		        'prev_text'  => '&#8592;', // Left arrow symbol (←)
-		        'next_text'  => '', // Right arrow symbol (→)
+		        'next_text'  => '&#8594;', // Right arrow symbol (→)
 		        'type'       => 'plain', // Display all page numbers
+		        'mid_size'	 => '1'
 		    ));
 		    $output .= '</div>';
 		}
