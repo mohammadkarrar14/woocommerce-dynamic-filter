@@ -94,11 +94,13 @@ class Woocommerce_Dynamic_Filter_Public {
 	 */
 	public function enqueue_styles() {
 
-		$random_number = rand(); // Generate a random number
-		wp_enqueue_style( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'css/woocommerce-dynamic-filter-public.css?v=' . $random_number, array(), $random_number, 'all' );
 
-		
-		wp_enqueue_style('ion-rangeslider-css', 'https://cdnjs.cloudflare.com/ajax/libs/ion-rangeslider/2.3.1/css/ion.rangeSlider.min.css');
+		if( is_tax('brands') || is_tax('product_cat') || is_shop() ) {
+			$random_number = rand(1, 1000); // Generate a random number
+			wp_enqueue_style( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'css/woocommerce-dynamic-filter-public.css', array(), $random_number, 'all' );
+			
+			wp_enqueue_style('ion-rangeslider-css', 'https://cdnjs.cloudflare.com/ajax/libs/ion-rangeslider/2.3.1/css/ion.rangeSlider.min.css');
+		}
 
 	}
 
@@ -486,8 +488,9 @@ class Woocommerce_Dynamic_Filter_Public {
 	    $main_category_ids = isset($_POST['categories']) ? $_POST['categories'] : array();
 	    $sub_category_ids = isset($_POST['sub_category']) ? $_POST['sub_category'] : array();
 	    $brand_ids = isset($_POST['brand_category']) ? $_POST['brand_category'] : array();
-	    $min_value = isset($_POST['min_value']) ? $_POST['min_value'] : null;
-	    $max_value = isset($_POST['max_value']) ? $_POST['max_value'] : null;
+		$min_value = isset($_POST['min_value']) ? intval($_POST['min_value']) : 0; // Convert to float
+		$max_value = isset($_POST['max_value']) ? intval($_POST['max_value']) : 50000; // Convert to float
+
 	    $page = isset($_POST['page']) ? intval($_POST['page']) : 1;
 
 	    // Get selected sorting option from AJAX request
@@ -552,14 +555,15 @@ class Woocommerce_Dynamic_Filter_Public {
 	    }
 
 	    // Apply price range filtering
-	    if (!empty($min_value) && !empty($max_value)) {
-	        $args['meta_query'][] = array(
-	            'key'     => '_price',
-	            'value'   => array($min_value, $max_value),
-	            'type'    => 'numeric',
-	            'compare' => 'BETWEEN',
-	        );
-	    }
+		if ($min_value !== '' && $max_value !== '') {
+		    $args['meta_query'][] = array(
+		        'key'     => '_price',
+		        'value'   => array($min_value, $max_value),
+		        'type'    => 'numeric',
+		        'compare' => 'BETWEEN',
+		    );
+		}
+
 
 	    // Query products
 	    $products_query = new WP_Query($args);
@@ -610,8 +614,8 @@ class Woocommerce_Dynamic_Filter_Public {
 	    // Get selected filter value from AJAX request
 	    $main_category_ids = isset($_POST['categories']) ? $_POST['categories'] : array();
 	    $sub_category_ids = isset($_POST['sub_category']) ? $_POST['sub_category'] : array();
-	    $min_value = isset($_POST['min_value']) ? $_POST['min_value'] : null;
-	    $max_value = isset($_POST['max_value']) ? $_POST['max_value'] : null;
+	    $min_value = isset($_POST['min_value']) ? $_POST['min_value'] : 0;
+	    $max_value = isset($_POST['max_value']) ? $_POST['max_value'] : 50000;
 	    $page = isset($_POST['page']) ? intval($_POST['page']) : 1;
 	    $brand = isset($_POST['brand']) ? $_POST['brand'] : '';
 
@@ -677,7 +681,7 @@ class Woocommerce_Dynamic_Filter_Public {
 	    }
 
 	    // Apply price range filtering
-		if (!empty($main_category_ids) && !empty($sub_category_ids) && !empty($min_value) && !empty($max_value)) {
+		if (!empty($min_value) && !empty($max_value)) {
 		    $args['meta_query'][] = array(
 		        'key'     => '_price',
 		        'value'   => array($min_value, $max_value),

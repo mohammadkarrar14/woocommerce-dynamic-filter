@@ -16,12 +16,15 @@
         function clearCheckboxes() {
             $('#main-category input[type="checkbox"]').prop('checked', false);
             $('#sub-category-filter input[type="checkbox"]').prop('checked', false);
+            $('#product-page-number').val(1);
             updateBrandProductsAjax();
         }
 
         // Add event listener to Clear All button
         $('#clear-all').on('click', function() {
             clearCheckboxes();
+            $('html, body').animate({scrollTop: $('.sorting-options').offset().top - 100}, 'fast');
+            
         });
 
         // Set href attribute of pagination links to "#"
@@ -83,7 +86,7 @@
                 $('#min-price').text('$' + data.from);
                 $('#max-price').text('$' + data.to);
             },
-            onChange: function (data) {
+            onFinish: function (data) {
                 $('#min-price').text('$' + data.from);
                 $('#max-price').text('$' + data.to);
                 $('#min-price-hidden').val(data.from);
@@ -94,9 +97,6 @@
 
         // Function to update products via AJAX
         function updateBrandProductsAjax() {
-
-            $('html, body').animate({scrollTop: $('.sorting-options').offset().top - 100}, 'fast');
-
             
             // Get the height and width of .custom-product-grid
             var productsHeight = $('.filter-product-result').height();
@@ -190,23 +190,27 @@
             var page = $(this);
 
             updatePageNumber( page );
+            $('html, body').animate({scrollTop: $('.sorting-options').offset().top - 100}, 'fast');
             updateBrandProductsAjax();
         });
 
         // Main category change event
         $(document).on('change', '#main-category input[type="checkbox"]', function() {
+            $('#product-page-number').val(1);
             updateBrandPriceRange();
             updateBrandProductsAjax();
         });
 
         // Sub-category change event
         $(document).on('change', '#sub-category-filter input[type="checkbox"]', function() {
+            $('#product-page-number').val(1);
             updateBrandPriceRange();
             updateBrandProductsAjax();
         });
 
         // Sorting option change event
         $(document).on('change', '#sort-option', function() {
+            $('#product-page-number').val(1);
             updateBrandProductsAjax();
         });
 

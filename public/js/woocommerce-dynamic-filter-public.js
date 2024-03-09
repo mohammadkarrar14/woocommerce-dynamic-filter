@@ -21,28 +21,28 @@
         
 
 
-        // Function to clear checkboxes and reset price range slider to default values
+        // Function to clear checkboxes and reset price range slider
         function clearCheckboxes() {
             $('#main-category input[type="checkbox"]').prop('checked', false);
             $('#sub-category input[type="checkbox"]').prop('checked', false);
             $('#brands-filter input[type="checkbox"]').prop('checked', false);
-
+            $('#product-page-number').val(1);
             $("#price-range-slider").data("ionRangeSlider").update({
                 min: 0,
                 max: 50000,
                 from: 0,
                 to: 50000
             });
-
-            $('#min-price').text('$' + 0);
-            $('#max-price').text('$' + 50000);
-
+            $('#min-price').text('$0');
+            $('#max-price').text('$50000');
             updateProductsAjax();
         }
 
         // Add event listener to Clear All button
         $('#clear-all').on('click', function() {
             clearCheckboxes();
+            $('html, body').animate({scrollTop: $('.sorting-options').offset().top - 100}, 'fast');
+
         });
 
         // Set href attribute of pagination links to "#"
@@ -91,6 +91,8 @@
 
                 updateBrands();
                 updatePriceRange();
+                $('html, body').animate({scrollTop: $('.sorting-options').offset().top - 100}, 'fast');
+
             } else {
                 // Clear subcategories, brands, and price range if no main categories selected
                 $('#sub-category').empty();
@@ -203,7 +205,7 @@
                 $('#min-price').text('$' + data.from);
                 $('#max-price').text('$' + data.to);
             },
-            onChange: function(data) {
+            onFinish: function(data) {
                 $('#min-price').text('$' + data.from);
                 $('#max-price').text('$' + data.to);
                 $('#min-price-hidden').val( data.from);
@@ -217,7 +219,6 @@
         // Function to update products via AJAX
         function updateProductsAjax() {
 
-            $('html, body').animate({scrollTop: $('.sorting-options').offset().top - 100}, 'fast');
 
             // Get the height and width of .custom-product-grid
             var productsHeight = $('.filter-product-result').height();
@@ -317,10 +318,13 @@
             var page = $(this);
             updatePageNumber( page );
             updateProductsAjax();
+            $('html, body').animate({scrollTop: $('.sorting-options').offset().top - 100}, 'fast');
+
         });
 
 
         $(document).on('change', '#main-category input[type="checkbox"]', function() {
+            $('#product-page-number').val(1);
             updateFilters();
             updatePriceRange();
             updateProductsAjax();
@@ -331,14 +335,18 @@
         });
 
         $(document).on('change', '#sub-category input[type="checkbox"]', function() {
+            $('#product-page-number').val(1);
             updateBrands();
             updatePriceRange();
             updateProductsAjax();
+
         });
 
         $(document).on('change', '#brands input[type="checkbox"]', function() {
+            $('#product-page-number').val(1);
             updatePriceRange();
             updateProductsAjax();
+            
         });
 
         $(document).on('click', '.mobile-filter-btn', function() {

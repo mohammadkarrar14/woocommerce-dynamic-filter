@@ -516,3 +516,14 @@
 .elementor-22063{
     display: flex !important;
 }
+
+.mobile-filter-btn {
+    display: none !important; /* Hide the button by default */
+}
+
+/* Show the button only on mobile devices */
+@media only screen and (max-width: 767px) {
+    .mobile-filter-btn {
+        display: flex !important;
+    }
+}
