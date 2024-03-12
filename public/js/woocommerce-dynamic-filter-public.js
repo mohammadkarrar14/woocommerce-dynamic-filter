@@ -1,6 +1,7 @@
 (function($) {
     'use strict';
 
+
     $(document).ready(function() {
         
         updateProductsAjax();
@@ -11,19 +12,32 @@
                 <div class="ajax-loader"></div>
             </div>
         `);
-        
+                
         $('#main-category input[type="checkbox"]').each(function() {
             var main_category_page_id = $('#main-category-page-id').val();
-            if ( $(this).val() === main_category_page_id ) {
+            if ($(this).val() === main_category_page_id && !$(this).prop('checked')) {
                 $(this).prop('checked', true).trigger('change');
             }
         });
-        
+
+        $('input[name="main_category[]"]').change(function() {
+            // Uncheck previously checked checkbox
+            $('input[name="main_category[]"]').not(this).prop('checked', false);
+            
+            // Check if checkbox is checked
+            if ($(this).is(':checked')) {
+                // Get category link from corresponding hidden input field
+                var categoryLink = $(this).siblings('input[name="category-link[]"]').val();
+                // Redirect to category page
+                window.location.href = categoryLink;
+            }
+        });
+
 
 
         // Function to clear checkboxes and reset price range slider
         function clearCheckboxes() {
-            $('#main-category input[type="checkbox"]').prop('checked', false);
+            // $('#main-category input[type="checkbox"]').prop('checked', false);
             $('#sub-category input[type="checkbox"]').prop('checked', false);
             $('#brands-filter input[type="checkbox"]').prop('checked', false);
             $('#product-page-number').val(1);
@@ -91,7 +105,7 @@
 
                 updateBrands();
                 updatePriceRange();
-                $('html, body').animate({scrollTop: $('.sorting-options').offset().top - 100}, 'fast');
+                // $('html, body').animate({scrollTop: $('.sorting-options').offset().top - 100}, 'fast');
 
             } else {
                 // Clear subcategories, brands, and price range if no main categories selected
@@ -236,10 +250,13 @@
             var max = $('#max-price-hidden').val();
             var sortingOption = $('#sort-option').val();
 
-            var selectedCategories = $('#main-category input[type="checkbox"]:checked').map(function() {
+            /*var selectedCategories = $('#main-category input[type="checkbox"]:checked').map(function() {
                 return $(this).val();
             }).get();
+            */
 
+            var selectedCategories = [];
+            selectedCategories =  $('#main-category-page-id').val();
             var selectedSubCategories = $('#sub-category input[type="checkbox"]:checked').map(function() {
                 return $(this).val();
             }).get();
@@ -302,12 +319,13 @@
 
         function updatePageNumber(clickedPage) {
             var page = clickedPage.text(); // Retrieve the current page number
+            var pageNumber = $('#product-page-number').val();
 
             // Check if the clicked page number has the class 'next' or 'prev'
             if ($(clickedPage).hasClass('next')) {
-                page = parseInt(page) + 1; // Increment the current page number by 1
+                page = parseInt(pageNumber) + 1; // Increment the current page number by 1
             } else if ($(clickedPage).hasClass('prev')) {
-                page = Math.max(parseInt(page) - 1, 1); // Ensure the page number is not less than 1
+                page = Math.max( parseInt( pageNumber ) - 1, 1); // Ensure the page number is not less than 1
             }
 
             $('#product-page-number').val(page); // Set the value of the '#product-page-number' input field to the updated page number
@@ -327,7 +345,7 @@
             $('#product-page-number').val(1);
             updateFilters();
             updatePriceRange();
-            updateProductsAjax();
+            // updateProductsAjax();
         });
 
         $(document).on('change', '#sort-option', function() {

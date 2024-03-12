@@ -44,11 +44,15 @@
 
                     // Check if current category matches
                     $checked = ($current_category_id == $category->term_id) ? 'checked' : '';
-
+                    
+                    // Add a link to redirect to the category
+                    $category_link = get_term_link($category->term_id, 'product_cat');
                     echo '<li>';
                     echo '<input type="checkbox" name="main_category[]" value="' . $category->term_id . '" ' . $checked . '>';
+                    echo '<input type="hidden" name="category-link[]" value="' . esc_url($category_link) . '" >'; 
                     echo '<label>' . $category->name . ' (' . $count . ')</label>';
                     echo '</li>';
+
                 }
             ?>
         </ul>

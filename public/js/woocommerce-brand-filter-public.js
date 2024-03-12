@@ -173,12 +173,13 @@
 
         function updatePageNumber(clickedPage) {
             var page = clickedPage.text(); // Retrieve the current page number
+            var pageNumber = $('#product-page-number').val();
 
             // Check if the clicked page number has the class 'next' or 'prev'
             if ($(clickedPage).hasClass('next')) {
-                page = parseInt(page) + 1; // Increment the current page number by 1
+                page = parseInt(pageNumber) + 1; // Increment the current page number by 1
             } else if ($(clickedPage).hasClass('prev')) {
-                page = Math.max(parseInt(page) - 1, 1); // Ensure the page number is not less than 1
+                page = Math.max( parseInt( pageNumber ) - 1, 1); // Ensure the page number is not less than 1
             }
 
             $('#product-page-number').val(page); // Set the value of the '#product-page-number' input field to the updated page number
