@@ -2,7 +2,10 @@
     <div class="filter-class">
         <div class="container">
             <div class="title">Filters</div>
-            <div class="filter-action" id="clear-all">Clear All</div>
+            <div class="filter-action" id="clear-all">
+                Clear All
+                <input type="hidden" name="shop-page-id" id="shop-page-id" value="<?php echo get_permalink( woocommerce_get_page_id( 'shop' ) ); ?>">
+            </div>
         </div>
         <div class="showing-info"></div>
     </div>
@@ -100,15 +103,24 @@
         </p>
     </div>
 
-   <?php
+    <?php
     // Get the current term object
     $current_term = get_queried_object();
 
     // Initialize variables to store main category ID and subcategory ID
     $main_category_id = $current_term->parent == 0 ? $current_term->term_id : get_term($current_term->parent, 'product_cat')->term_id;
     $sub_category_id = $current_term->term_id;
+
+    // Get category names
+    $main_category_name = get_term($main_category_id, 'product_cat')->name;
+    $sub_category_name = $current_term->name;
     ?>
 
     <input type="hidden" name="main-category-page-id" id="main-category-page-id" value="<?php echo $main_category_id; ?>">
     <input type="hidden" name="sub-category-page-id" id="sub-category-page-id" value="<?php echo $sub_category_id; ?>">
+
+    <!-- Additional hidden fields for category names -->
+    <input type="hidden" name="main-category-name" id="main-category-name" value="<?php echo $main_category_name; ?>">
+    <input type="hidden" name="sub-category-name" id="sub-category-name" value="<?php echo $sub_category_name; ?>">
+
 </form>

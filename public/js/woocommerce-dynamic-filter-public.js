@@ -5,6 +5,7 @@
     $(document).ready(function() {
         
         updateProductsAjax();
+        
 
         // Show loader before AJAX request
         $('.filter-product-result').before(`
@@ -12,7 +13,17 @@
                 <div class="ajax-loader"></div>
             </div>
         `);
-                
+        
+        var mainCategoryName = $('#main-category-name').val();
+        var subCategoryName = $('#sub-category-name').val();
+
+        if ( mainCategoryName !== subCategoryName) {
+            var headingText = subCategoryName + ' / ' + mainCategoryName;
+            $('#sub-category-page-heading').html('<h2 class="elementor-heading-title elementor-size-default">' + headingText + '</h2>');
+        }
+
+
+
         $('#main-category input[type="checkbox"]').each(function() {
             var main_category_page_id = $('#main-category-page-id').val();
             if ($(this).val() === main_category_page_id && !$(this).prop('checked')) {
@@ -38,18 +49,25 @@
         // Function to clear checkboxes and reset price range slider
         function clearCheckboxes() {
             // $('#main-category input[type="checkbox"]').prop('checked', false);
-            $('#sub-category input[type="checkbox"]').prop('checked', false);
-            $('#brands-filter input[type="checkbox"]').prop('checked', false);
-            $('#product-page-number').val(1);
-            $("#price-range-slider").data("ionRangeSlider").update({
-                min: 0,
-                max: 50000,
-                from: 0,
-                to: 50000
-            });
-            $('#min-price').text('$0');
-            $('#max-price').text('$50000');
-            updateProductsAjax();
+            
+            // Get the value of shop page URL from the hidden input field
+            var shopPageUrl = $('#shop-page-id').val();
+            
+            // Redirect to the WooCommerce shop page
+            window.location.href = shopPageUrl;
+            
+            // $('#sub-category input[type="checkbox"]').prop('checked', false);
+            // $('#brands-filter input[type="checkbox"]').prop('checked', false);
+            // $('#product-page-number').val(1);
+            // $("#price-range-slider").data("ionRangeSlider").update({
+            //     min: 0,
+            //     max: 50000,
+            //     from: 0,
+            //     to: 50000
+            // });
+            // $('#min-price').text('$0');
+            // $('#max-price').text('$50000');
+            // updateProductsAjax();
         }
 
         // Add event listener to Clear All button
@@ -313,6 +331,10 @@
                 },
                 complete: function() {
                     $('.product-overlay').hide();
+                    $('.elementor-22063 .elementor-heading-title').each(function() {
+                        var newText = $(this).text().replace(/\//g, '-');
+                        $(this).text(newText);
+                    });
                 }
             });
         }

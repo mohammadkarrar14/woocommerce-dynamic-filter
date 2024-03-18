@@ -4,6 +4,10 @@
     $(document).ready(function() {
         
         updateBrandProductsAjax();
+        $('.elementor-22063 .elementor-heading-title.a').each(function() {
+        var newText = $(this).text().replace(/\//g, '-');
+            $(this).text(newText);
+        });
         
         // Show loader before AJAX request
         $('.filter-product-result').before(`

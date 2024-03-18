@@ -187,7 +187,9 @@
     wp_reset_postdata();
 
 
+
     // Output the minimum and maximum prices
+    $min_price = 0;    
     ?>
     <div id="price-range" class="filter-box">
         <div class="filter-class">

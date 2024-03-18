@@ -1,6 +1,6 @@
 # WooCommerce Dynamic Filter
 
-Contributors: Muhammad Karrar  
+Contributors: Muhammad Karrar, Imagen Web Pro  
 Tags: woocommerce, filter, dynamic, category, subcategory  
 Requires at least: 4.0  
 Tested up to: 6.4.2  

@@ -309,7 +309,7 @@ class Woocommerce_Dynamic_Filter_Public {
 
 	    // Prepare price range array
 	    $price_range = array(
-	        'min_price' => $min_price,
+	        'min_price' => 0,
 	        'max_price' => $max_price,
 	    );
 
@@ -383,7 +383,7 @@ class Woocommerce_Dynamic_Filter_Public {
 
 	    // Prepare price range array
 	    $price_range = array(
-	        'min_price' => $min_price,
+	        'min_price' => 0,
 	        'max_price' => $max_price,
 	    );
 
@@ -573,6 +573,7 @@ class Woocommerce_Dynamic_Filter_Public {
 	        $products_html = ''; // Initialize empty string to store HTML for products
 	        while ($products_query->have_posts()) {
 	            $products_query->the_post();
+	            $products_html .= get_post_meta( get_the_ID(), '_visibility', true );
 	            $product = wc_get_product(get_the_ID());
 	            // Render Elementor template and concatenate HTML for each product
 	            $products_html .= Elementor\Plugin::instance()->frontend->get_builder_content_for_display(22063);
@@ -630,22 +631,9 @@ class Woocommerce_Dynamic_Filter_Public {
 	        'paged'          => max(1, intval($_POST['page'] ?? 1)), // Apply pagination, handling if $_POST['page'] is not set
 	    );
 
-	    // Initialize tax query
-	    $tax_query = array();
-
-	    // Add brand tax query if brand is provided
-	    if (!empty($brand)) {
-	        $tax_query[] = array(
-	            'taxonomy' => 'brands',
-	            'field'    => 'term_id',
-	            'terms'    => array($brand),
-	            'operator' => 'IN',
-	        );
-	    }
-
-	    // Add main category tax query if main category IDs are provided
+	    // If filtering by main category
 	    if (!empty($main_category_ids)) {
-	        $tax_query[] = array(
+	        $args['tax_query'][] = array(
 	            'taxonomy' => 'product_cat',
 	            'field'    => 'term_id',
 	            'terms'    => $main_category_ids,
@@ -653,9 +641,9 @@ class Woocommerce_Dynamic_Filter_Public {
 	        );
 	    }
 
-	    // Add sub-category tax query if sub-category IDs are provided
+	    // If filtering by sub-categories
 	    if (!empty($sub_category_ids)) {
-	        $tax_query[] = array(
+	        $args['tax_query'][] = array(
 	            'taxonomy' => 'product_cat',
 	            'field'    => 'term_id',
 	            'terms'    => $sub_category_ids,
@@ -663,25 +651,29 @@ class Woocommerce_Dynamic_Filter_Public {
 	        );
 	    }
 
-	    // Set tax query
-	    if (!empty($tax_query)) {
-	        $args['tax_query'] = $tax_query;
+	    // If filtering by brands
+	    if (!empty($brand)) {
+	        $args['tax_query'][] = array(
+	            'taxonomy' => 'brands', // Adjust taxonomy name if needed
+	            'field'    => 'term_id',
+	            'terms'    => array($brand),
+	            'operator' => 'IN',
+	        );
 	    }
-
-	    // Set meta key for sorting
-	    $args['meta_key'] = '_price';
 
 	    // Apply sorting based on selected option
 	    if ($sort_option === 'high-to-low') {
-	        $args['orderby'] = 'meta_value_num';
-	        $args['order'] = 'DESC';
-	    } else {
-	        $args['orderby'] = 'meta_value_num';
-	        $args['order'] = 'ASC';
+	        $args['orderby']  = 'meta_value_num';
+	        $args['meta_key'] = '_price';
+	        $args['order']    = 'DESC';
+	    } elseif ($sort_option === 'low-to-high') {
+	        $args['orderby']  = 'meta_value_num';
+	        $args['meta_key'] = '_price';
+	        $args['order']    = 'ASC';
 	    }
 
 	    // Apply price range filtering
-		if (!empty($min_value) && !empty($max_value)) {
+		if ($min_value !== '' && $max_value !== '') {
 		    $args['meta_query'][] = array(
 		        'key'     => '_price',
 		        'value'   => array($min_value, $max_value),
