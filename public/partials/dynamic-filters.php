@@ -96,24 +96,47 @@
         <input type="text" id="price-range-slider" name="price_range" />
         <p class="price-range">
             <span id="min-price">$0</span>
-            <span id="max-price">$50000</span>
+            <span id="max-price">$100000</span>
             <input type="hidden" id="min-price-hidden" name="min-price" value="0">
-            <input type="hidden" id="max-price-hidden" name="max-price" value="50000">
+            <input type="hidden" id="max-price-hidden" name="max-price" value="100000">
             <input type="hidden" id="product-page-number" name="product-page-number" value="1">
         </p>
     </div>
 
     <?php
-    // Get the current term object
-    $current_term = get_queried_object();
+	$current_term = get_queried_object();
 
-    // Initialize variables to store main category ID and subcategory ID
-    $main_category_id = $current_term->parent == 0 ? $current_term->term_id : get_term($current_term->parent, 'product_cat')->term_id;
-    $sub_category_id = $current_term->term_id;
+   	// Initialize variables to store main category ID and subcategory ID
+	if (is_a($current_term, 'WP_Term')) {
+		$main_category_id = $current_term->parent == 0 ? $current_term->term_id : get_term($current_term->parent, 'product_cat')->term_id;
+		$sub_category_id = $current_term->term_id;
 
-    // Get category names
-    $main_category_name = get_term($main_category_id, 'product_cat')->name;
-    $sub_category_name = $current_term->name;
+		// Get main category term
+		$main_category_term = get_term($main_category_id, 'product_cat');
+
+		// Check if the main category term and current term are valid terms
+		if (!is_wp_error($main_category_term) && is_a($main_category_term, 'WP_Term')) {
+			$main_category_name = $main_category_term->name;
+		} else {
+			$main_category_name = '';
+		}
+
+		if (!is_wp_error($current_term) && is_a($current_term, 'WP_Term')) {
+			$sub_category_name = $current_term->name;
+		} else {
+			$sub_category_name = '';
+		}
+	} else {
+		// If $current_term is not a WP_Term, initialize variables as empty
+		$main_category_id = 0;
+		$sub_category_id = 0;
+		$main_category_name = '';
+		$sub_category_name = '';
+	}
+
+    if ( is_tax('product_tag') ){
+        $tag_page_id = $main_category_id; 
+    }
     ?>
 
     <input type="hidden" name="main-category-page-id" id="main-category-page-id" value="<?php echo $main_category_id; ?>">
@@ -122,5 +145,10 @@
     <!-- Additional hidden fields for category names -->
     <input type="hidden" name="main-category-name" id="main-category-name" value="<?php echo $main_category_name; ?>">
     <input type="hidden" name="sub-category-name" id="sub-category-name" value="<?php echo $sub_category_name; ?>">
+    
+    <input type="hidden" name="tag-page-id" id="tag-page-id" value="<?php echo $tag_page_id; ?>">
+
+    <input type="hidden" name="search-filter-input" id="search-filter-input" value="<?php echo isset($_GET['s']) ? htmlspecialchars($_GET['s']) : ''; ?>">
+
 
 </form>

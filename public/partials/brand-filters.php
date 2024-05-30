@@ -19,7 +19,7 @@
             <?php
                 if (is_tax('brands')) {
                     $current_term_id = get_queried_object_id();
-                    
+                    $current_category_id = 0;
                     // Fetch product categories efficiently
                     $product_categories_query = new WP_Term_Query(array(
                         'taxonomy'   => 'product_cat',

@@ -527,9 +527,9 @@
 /* Show the button only on mobile devices */
 @media only screen and (max-width: 767px) {
     
-    /*.elementor-22063 .elementor-element.elementor-element-9a897e2 .elementor-heading-title {
+    .elementor-22063 .elementor-element.elementor-element-9a897e2 .elementor-heading-title {
         font-size: 14px !important; /* Lower font size */
-    }*/
+    }
 }
 
 .product-low-stock, .product-out-stock, .product-new-stock {

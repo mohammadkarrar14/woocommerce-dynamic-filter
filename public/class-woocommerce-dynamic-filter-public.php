@@ -95,7 +95,7 @@ class Woocommerce_Dynamic_Filter_Public {
 	public function enqueue_styles() {
 
 
-		if( is_tax('brands') || is_tax('product_cat') || is_shop() ) {
+		if( is_tax('brands') || is_tax('product_cat') || is_shop() || is_tax('product_tag') ) {
 			$random_number = rand(1, 1000); // Generate a random number
 			wp_enqueue_style( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'css/woocommerce-dynamic-filter-public.css', array(), $random_number, 'all' );
 			
@@ -120,7 +120,7 @@ class Woocommerce_Dynamic_Filter_Public {
 	    if (is_tax('brands')) {
 	        // Enqueue wdf-brand-script with a random number added to the URL
 	        wp_enqueue_script( 'wdf-brand-script', plugin_dir_url( __FILE__ ) . 'js/woocommerce-brand-filter-public.js?v=' . $random_number, array( 'jquery' ), $this->version, false );
-
+	        
 	        // Get localized data to pass to scripts
 	        $data = $this->get_localize_data();
 
@@ -129,7 +129,7 @@ class Woocommerce_Dynamic_Filter_Public {
 	    } 
 
 	    // Check if it's a product category taxonomy page or shop page
-	    if( is_tax('product_cat') || is_shop()) {
+	    if( is_tax('product_cat') || is_shop() || is_tax('product_tag') ) {
 	        // Enqueue wdf-category-script with a random number added to the URL
 	        wp_enqueue_script( 'wdf-category-script', plugin_dir_url( __FILE__ ) . 'js/woocommerce-dynamic-filter-public.js', array( 'jquery' ), $random_number, false );
 
@@ -160,38 +160,46 @@ class Woocommerce_Dynamic_Filter_Public {
 
 	// Register shortcode for dynamic filters
 	public function woocommerce_dynamic_filters_shortcode($atts) {
-	    ob_start(); // Start output buffering
+	    
+		// Check if it's a product category, shop, or custom taxonomy page (brands)
+    	if ( is_tax('product_cat') || is_shop() || is_tax('brands') || is_tax('product_tag') ) { 
+		    ob_start(); // Start output buffering
 
-	    // Include HTML markup for the filters
-	    include_once( __DIR__  . '/partials/dynamic-filters.php');
+		    // Include HTML markup for the filters
+		    include_once( __DIR__  . '/partials/dynamic-filters.php');
 
 
-	    $output = ob_get_clean(); // Get the buffered content and clean the buffer
-	    return $output; // Return the filtered output
+		    $output = ob_get_clean(); // Get the buffered content and clean the buffer
+		    return $output; // Return the filtered output
+    	}
 	}
 
 	// Register shortcode for dynamic sorting filters
 	public function woocommerce_dynamic_sorting_filters_shortcode($atts) {
-	    ob_start(); // Start output buffering
+	    if ( is_tax('product_cat') || is_shop() || is_tax('brands') || is_tax('product_tag') ) {  
+		    ob_start(); // Start output buffering
 
-	    // Include HTML markup for the filters
-	    include_once( __DIR__  . '/partials/sorting-filters.php');
+		    // Include HTML markup for the filters
+		    include_once( __DIR__  . '/partials/sorting-filters.php');
 
 
-	    $output = ob_get_clean(); // Get the buffered content and clean the buffer
-	    return $output; // Return the filtered output
-	}
+		    $output = ob_get_clean(); // Get the buffered content and clean the buffer
+		    return $output; // Return the filtered output
+		}
+    }
 
 	// Register shortcode for dynamic sorting filters
 	public function woocommerce_dynamic_brand_filters_shortcode($atts) {
-	    ob_start(); // Start output buffering
+		if ( is_tax('product_cat') || is_shop() || is_tax('brands') || is_tax('product_tag') ) { 
+		    ob_start(); // Start output buffering
 
-	    // Include HTML markup for the filters
-	    include_once( __DIR__  . '/partials/brand-filters.php');
+		    // Include HTML markup for the filters
+		    include_once( __DIR__  . '/partials/brand-filters.php');
 
 
-	    $output = ob_get_clean(); // Get the buffered content and clean the buffer
-	    return $output; // Return the filtered output
+		    $output = ob_get_clean(); // Get the buffered content and clean the buffer
+		    return $output; // Return the filtered output
+		}
 	}
 
 	public function get_subcategories_ajax() {
@@ -444,6 +452,7 @@ class Woocommerce_Dynamic_Filter_Public {
 	            foreach ($tax_query as $query) {
 	                $args = array(
 	                    'post_type' => 'product',
+						'post_status' => 'publish',
 	                    'posts_per_page' => -1,
 	                    'tax_query' => array(
 	                        'relation' => 'AND',
@@ -477,25 +486,21 @@ class Woocommerce_Dynamic_Filter_Public {
 	    wp_die(); // Terminate script execution after sending the JSON response
 	}
 
-	/**
-	 * Callback function to update products via AJAX.
-	 */
 	public function update_products_callback() {
 	    // Initialize response array
 	    $response = array();
 
-	    // Get selected filter value from AJAX request
+	    // Get selected filter values from AJAX request
 	    $main_category_ids = isset($_POST['categories']) ? $_POST['categories'] : array();
 	    $sub_category_ids = isset($_POST['sub_category']) ? $_POST['sub_category'] : array();
 	    $brand_ids = isset($_POST['brand_category']) ? $_POST['brand_category'] : array();
-		$min_value = isset($_POST['min_value']) ? intval($_POST['min_value']) : 0; // Convert to float
-		$max_value = isset($_POST['max_value']) ? intval($_POST['max_value']) : 50000; // Convert to float
-
+	    $min_value = isset($_POST['min_value']) ? intval($_POST['min_value']) : 0; // Convert to int
+	    $max_value = isset($_POST['max_value']) ? intval($_POST['max_value']) : 100000; // Convert to int
+	    $tag_id = isset($_POST['tag_id']) ? intval($_POST['tag_id']) : 0;
 	    $page = isset($_POST['page']) ? intval($_POST['page']) : 1;
 
 	    // Get selected sorting option from AJAX request
 	    $sort_option = isset($_POST['sort_option']) && $_POST['sort_option'] != 0 ? $_POST['sort_option'] : 'low-to-high';
-
 
 	    // Search filter
 	    $search_term = isset($_POST['search']) ? sanitize_text_field($_POST['search']) : '';
@@ -505,7 +510,7 @@ class Woocommerce_Dynamic_Filter_Public {
 	        'post_type'      => 'product',
 	        'post_status'    => 'publish',
 	        'posts_per_page' => 12, // Adjust the number of products per page as needed
-	        'paged'          => max(1, intval($_POST['page'])), // Apply pagination
+	        'paged'          => max(1, $page), // Apply pagination
 	    );
 
 	    // Add search term if provided
@@ -513,34 +518,53 @@ class Woocommerce_Dynamic_Filter_Public {
 	        $args['s'] = $search_term;
 	    }
 
-	    // If filtering by main category
-	    if (!empty($main_category_ids)) {
-	        $args['tax_query'][] = array(
-	            'taxonomy' => 'product_cat',
-	            'field'    => 'term_id',
-	            'terms'    => $main_category_ids,
-	            'operator' => 'IN',
-	        );
-	    }
+	    // Initialize tax_query array
+	    $tax_query = array();
 
-	    // If filtering by sub-categories
-	    if (!empty($sub_category_ids)) {
-	        $args['tax_query'][] = array(
-	            'taxonomy' => 'product_cat',
+	    // If filtering by tag
+	    if ($tag_id > 0) {
+	        $tax_query[] = array(
+	            'taxonomy' => 'product_tag',
 	            'field'    => 'term_id',
-	            'terms'    => $sub_category_ids,
+	            'terms'    => $tag_id,
 	            'operator' => 'IN',
 	        );
+	    } else {
+	        // If not filtering by tag, apply category and subcategory filters
+	        // If filtering by main category
+	        if (!empty($main_category_ids)) {
+	            $tax_query[] = array(
+	                'taxonomy' => 'product_cat',
+	                'field'    => 'term_id',
+	                'terms'    => $main_category_ids,
+	                'operator' => 'IN',
+	            );
+	        }
+
+	        // If filtering by sub-categories
+	        if (!empty($sub_category_ids)) {
+	            $tax_query[] = array(
+	                'taxonomy' => 'product_cat',
+	                'field'    => 'term_id',
+	                'terms'    => $sub_category_ids,
+	                'operator' => 'IN',
+	            );
+	        }
 	    }
 
 	    // If filtering by brands
 	    if (!empty($brand_ids)) {
-	        $args['tax_query'][] = array(
+	        $tax_query[] = array(
 	            'taxonomy' => 'brands', // Adjust taxonomy name if needed
 	            'field'    => 'term_id',
 	            'terms'    => $brand_ids,
 	            'operator' => 'IN',
 	        );
+	    }
+
+	    // Add tax_query to args if not empty
+	    if (!empty($tax_query)) {
+	        $args['tax_query'] = $tax_query;
 	    }
 
 	    // Apply sorting based on selected option
@@ -555,15 +579,14 @@ class Woocommerce_Dynamic_Filter_Public {
 	    }
 
 	    // Apply price range filtering
-		if ($min_value !== '' && $max_value !== '') {
-		    $args['meta_query'][] = array(
-		        'key'     => '_price',
-		        'value'   => array($min_value, $max_value),
-		        'type'    => 'numeric',
-		        'compare' => 'BETWEEN',
-		    );
-		}
-
+	    if ($min_value !== '' && $max_value !== '') {
+	        $args['meta_query'][] = array(
+	            'key'     => '_price',
+	            'value'   => array($min_value, $max_value),
+	            'type'    => 'numeric',
+	            'compare' => 'BETWEEN',
+	        );
+	    }
 
 	    // Query products
 	    $products_query = new WP_Query($args);
@@ -573,7 +596,6 @@ class Woocommerce_Dynamic_Filter_Public {
 	        $products_html = ''; // Initialize empty string to store HTML for products
 	        while ($products_query->have_posts()) {
 	            $products_query->the_post();
-	            $products_html .= get_post_meta( get_the_ID(), '_visibility', true );
 	            $product = wc_get_product(get_the_ID());
 	            // Render Elementor template and concatenate HTML for each product
 	            $products_html .= Elementor\Plugin::instance()->frontend->get_builder_content_for_display(22063);
@@ -601,6 +623,8 @@ class Woocommerce_Dynamic_Filter_Public {
 	}
 
 
+
+
 	public function update_brands_products_callback() {
 	    // Initialize response array
 	    $response = array();
@@ -616,7 +640,7 @@ class Woocommerce_Dynamic_Filter_Public {
 	    $main_category_ids = isset($_POST['categories']) ? $_POST['categories'] : array();
 	    $sub_category_ids = isset($_POST['sub_category']) ? $_POST['sub_category'] : array();
 	    $min_value = isset($_POST['min_value']) ? $_POST['min_value'] : 0;
-	    $max_value = isset($_POST['max_value']) ? $_POST['max_value'] : 50000;
+	    $max_value = isset($_POST['max_value']) ? $_POST['max_value'] : 100000;
 	    $page = isset($_POST['page']) ? intval($_POST['page']) : 1;
 	    $brand = isset($_POST['brand']) ? $_POST['brand'] : '';
 
