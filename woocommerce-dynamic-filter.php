@@ -10,7 +10,7 @@
  * Plugin URI:        https://muhammadkarrar.com/
  * Description:       The "WooCommerce Dynamic Filters" plugin enhances product filtering capabilities in WooCommerce, allowing users to refine their search by selecting main categories and subcategories.
  * Version:           1.0.0
- * Author:            Imagen Web Pro
+ * Author:            Muhammad Karrar
  * Author URI:        https://muhammadkarrar.com/
  * License:           GPL-2.0+
  * License URI:       http://www.gnu.org/licenses/gpl-2.0.txt
